@@ -10,7 +10,7 @@ for dirty in lines:
     temp = re.sub("[^\d.]","",dirty)
     if temp!="":
         cleanList.append(temp)#filtering
-numbers = list(map(float,lines))#convert to float
+numbers = list(map(float,cleanList))#convert to float
 
 print(sum(numbers)/len(numbers))#print result. can use numbers list to produce a plot though
 
