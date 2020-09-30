@@ -1,5 +1,8 @@
 import csv
 import plotly
+import sys
+import os
+from glob import glob
 
 def parse_csv(csv_file):
     data_points = []
@@ -172,27 +175,55 @@ hybla = [[".\\initcwnd_data\\hybla\\3\\mlcnetC.cs.wpi.edu_hybla_0\\local.csv",\
 names = ["3","5","10","20","40" ]
 index = 0
 
-for inwin in cubic:
-    generate_trace(inwin,names[index],fig_cubic)
+CCA_DIRS = [
+    './initcwnd_data/cubic',
+    './initcwnd_data/bbr',
+    './initcwnd_data/hybla'
+    ]
+
+WIN_DIR = [3,5,10,20,40]
+RUN_DIRS = {
+    CCA_DIRS[0]:'/mlcnetA.cs.wpi.edu_cubic_',
+    CCA_DIRS[1]:'/mlcnetB.cs.wpi.edu_bbr_',
+    CCA_DIRS[2]:'/mlcnetC.cs.wpi.edu_hybla_'
+}
+
+if (len(sys.argv)==4):
+    num_trials = int(sys.argv[3])
+    mlc_letter = sys.argv[2]
+    algorithm = sys.argv[1]
+    figure = plotly.graph_objects.Figure()
+    
+    for inwin in WIN_DIR:
+        paths = []
+        for trial in range(num_trials):
+            paths.append(f"{os.getcwd()}/initcwnd_data/{algorithm}/{inwin}/mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}/local.csv")
+        print(paths)
+        generate_trace(paths,inwin,figure)
+        figure.update_layout(title=algorithm, xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
+else:
+    for inwin in cubic:
+        generate_trace(inwin,names[index],fig_cubic)
     index += 1
 
-index = 0
+    index = 0
 
-for inwin in bbr:
-    generate_trace(inwin,names[index],fig_bbr)
-    index += 1
+    for inwin in bbr:
+        generate_trace(inwin,names[index],fig_bbr)
+        index += 1
 
-index = 0
+    index = 0
 
-for inwin in hybla:
-    generate_trace(inwin,names[index],fig_hybla)
-    index += 1
+    for inwin in hybla:
+        generate_trace(inwin,names[index],fig_hybla)
+        index += 1
 
-fig_cubic.update_layout(title="Cubic", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
-fig_cubic.show()
+    fig_cubic.update_layout(title="Cubic", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
+    fig_cubic.show()
 
-fig_bbr.update_layout(title="BBR", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
-fig_bbr.show()
+    fig_bbr.update_layout(title="BBR", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
+    fig_bbr.show()
 
-fig_hybla.update_layout(title="Hybla", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
-fig_hybla.show()
+    fig_hybla.update_layout(title="Hybla", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
+    fig_hybla.show()
+    
