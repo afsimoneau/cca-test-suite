@@ -197,7 +197,7 @@ if (len(sys.argv)==4):
     for inwin in WIN_DIR:
         paths = []
         for trial in range(num_trials):
-            paths.append(f"{os.getcwd()}/initcwnd_data/{algorithm}/{inwin}/mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}/local.csv")
+            paths.append(f"{os.getcwd()}/../initcwnd_data/{algorithm}/{inwin}/mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}/local.csv")
         print(paths)
         generate_trace(paths,inwin,figure)
         figure.update_layout(title=algorithm, xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
