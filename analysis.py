@@ -178,8 +178,25 @@ index = 0
 WIN_DIR = [3,5,10,20,40]
 PCC_DIR = [180000,300000,600000,1200000,2400000]
 
-
-if (len(sys.argv)==4):
+if (sys.argv[1]=="across"):
+    #analysis.py across <initcwnd> <trials>
+    list_algorithms = ["cubic","bbr","hybla"]
+    letters = ["A","B","C"]
+    initcwnd = int(sys.argv[2])
+    num_trials = int(sys.argv[3])
+    figure = plotly.graph_objects.Figure()
+    i = 0
+    for algo in list_algorithms:
+        paths = []
+        for trial in range(num_trials):
+            paths.append(f"{os.getcwd()}/initcwnd_data/{algo}/{initcwnd}/mlcnet{letters[i]}.cs.wpi.edu_{algo}_{trial}/local.csv")
+        print(f"algorithm: {algo}")
+        generate_trace(paths,algo,figure)
+        figure.update_layout(title=f"initcwnd {initcwnd}", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
+        i+=1
+    figure.show()
+elif (len(sys.argv)==4):
+    #analysis.py <algorithm> <letter> <trials>
     num_trials = int(sys.argv[3])
     mlc_letter = sys.argv[2]
     algorithm = sys.argv[1]
@@ -190,10 +207,10 @@ if (len(sys.argv)==4):
         paths = []
         for trial in range(num_trials):
             paths.append(f"{os.getcwd()}/initcwnd_data/{algorithm}/{inwin}/mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}/local.csv")
-        print(paths)
+        print(f"window: {inwin}")
         generate_trace(paths,inwin,figure)
         figure.update_layout(title=algorithm, xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
-    figure.show()    
+    figure.show()   
 else:
     for inwin in cubic:
         generate_trace(inwin,names[index],fig_cubic)
@@ -219,4 +236,3 @@ else:
 
     fig_hybla.update_layout(title="Hybla", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
     fig_hybla.show()
-    
