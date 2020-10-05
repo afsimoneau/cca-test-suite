@@ -23,7 +23,6 @@ def parse_csv(csv_file):
                     previous_bytes = int(row[8])
                 elif int(row[8]) <= previous_bytes and int(row[8]) > 10:
                     data_points.append([0,1,sum(x * float(t) for x, t in zip([3600, 60, 1], row[11][12:30].split(":"))) - start_time])
-
         line_count += 1
     return data_points
 
@@ -51,7 +50,6 @@ def totals_per_time_frame(data_points, time_frame):
             time_frame_max += time_frame
             transmissions_in_frame = 0
             retransmissions_in_frame = 0
-    
     return [percent_retransmissions_list,time_list]
     
 def generate_trace(csv_files, figure):
@@ -66,11 +64,13 @@ def generate_trace(csv_files, figure):
         ))
 
 time_frame = 1
-fig3 = plotly.graph_objects.Figure()
-fig5 = plotly.graph_objects.Figure()
-fig10 = plotly.graph_objects.Figure()
-fig20 = plotly.graph_objects.Figure()
-fig40 = plotly.graph_objects.Figure()
+# fig3 = plotly.graph_objects.Figure()
+# fig5 = plotly.graph_objects.Figure()
+# fig10 = plotly.graph_objects.Figure()
+# fig20 = plotly.graph_objects.Figure()
+# fig40 = plotly.graph_objects.Figure()
+fig100 = plotly.graph_objects.Figure()
+fig250 = plotly.graph_objects.Figure()
 
 cubic = [[".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
           ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
@@ -96,25 +96,43 @@ cubic = [[".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
           ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
           ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
           ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"]]
+          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
+         [".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
+          ".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
+          ".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
+          ".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
+          ".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
+         [".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
+          ".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
+          ".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
+          ".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
+          ".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"]]
 
-generate_trace(cubic[0],fig3)
-generate_trace(cubic[1],fig5)
-generate_trace(cubic[2],fig10)
-generate_trace(cubic[3],fig20)
-generate_trace(cubic[4],fig40)
+# generate_trace(cubic[0],fig3)
+# generate_trace(cubic[1],fig5)
+# generate_trace(cubic[2],fig10)
+# generate_trace(cubic[3],fig20)
+# generate_trace(cubic[4],fig40)
+generate_trace(cubic[5],fig100)
+generate_trace(cubic[6],fig250)
 
-fig3.update_layout(title="Cubic 3", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-fig3.show()
+# fig3.update_layout(title="Cubic 3", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
+# fig3.show()
 
-fig5.update_layout(title="Cubic 5", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-fig5.show()
+# fig5.update_layout(title="Cubic 5", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
+# fig5.show()
 
-fig10.update_layout(title="Cubic 10", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-fig10.show()
+# fig10.update_layout(title="Cubic 10", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
+# fig10.show()
 
-fig20.update_layout(title="Cubic 20", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-fig20.show()
+# fig20.update_layout(title="Cubic 20", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
+# fig20.show()
 
-fig40.update_layout(title="Cubic 40", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-fig40.show()
+# fig40.update_layout(title="Cubic 40", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
+# fig40.show()
+
+fig100.update_layout(title="Cubic 100", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
+fig100.show()
+
+fig250.update_layout(title="Cubic 250", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
+fig250.show()
