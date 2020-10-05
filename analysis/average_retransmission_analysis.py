@@ -178,10 +178,10 @@ for inwin in cubic7:
     index += 1
 
 
-fig_cubic5.update_layout(title="Cubic (5 traces)", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
+fig_cubic5.update_layout(title="Average Retransmission Rate: Cubic (5 traces)", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
 fig_cubic5.show()
 
-fig_cubic7.update_layout(title="Cubic (7 traces)", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
+fig_cubic7.update_layout(title="Average Retransmission Rate: Cubic (7 traces)", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
 fig_cubic7.show()
 
 
