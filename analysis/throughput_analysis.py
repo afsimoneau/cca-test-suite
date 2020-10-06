@@ -90,97 +90,13 @@ def generate_trace(csv_files_to_average, label, figure):
     ))
 
 time_frame = 1
-fig_cubic = plotly.graph_objects.Figure()
-fig_bbr = plotly.graph_objects.Figure()
-fig_hybla = plotly.graph_objects.Figure()
-
-cubic = [[".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],
-         [".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"]]
-
-bbr = [[".\\initcwnd_data\\bbr\\3\\mlcnetB.cs.wpi.edu_bbr_0\\local.csv",\
-          ".\\initcwnd_data\\bbr\\3\\mlcnetB.cs.wpi.edu_bbr_1\\local.csv",\
-          ".\\initcwnd_data\\bbr\\3\\mlcnetB.cs.wpi.edu_bbr_2\\local.csv",\
-          ".\\initcwnd_data\\bbr\\3\\mlcnetB.cs.wpi.edu_bbr_3\\local.csv",\
-          ".\\initcwnd_data\\bbr\\3\\mlcnetB.cs.wpi.edu_bbr_4\\local.csv"],
-        [".\\initcwnd_data\\bbr\\5\\mlcnetB.cs.wpi.edu_bbr_0\\local.csv",\
-          ".\\initcwnd_data\\bbr\\5\\mlcnetB.cs.wpi.edu_bbr_1\\local.csv",\
-          ".\\initcwnd_data\\bbr\\5\\mlcnetB.cs.wpi.edu_bbr_2\\local.csv",\
-          ".\\initcwnd_data\\bbr\\5\\mlcnetB.cs.wpi.edu_bbr_3\\local.csv",\
-          ".\\initcwnd_data\\bbr\\5\\mlcnetB.cs.wpi.edu_bbr_4\\local.csv"],
-        [".\\initcwnd_data\\bbr\\10\\mlcnetB.cs.wpi.edu_bbr_0\\local.csv",\
-          ".\\initcwnd_data\\bbr\\10\\mlcnetB.cs.wpi.edu_bbr_1\\local.csv",\
-          ".\\initcwnd_data\\bbr\\10\\mlcnetB.cs.wpi.edu_bbr_2\\local.csv",\
-          ".\\initcwnd_data\\bbr\\10\\mlcnetB.cs.wpi.edu_bbr_3\\local.csv",\
-          ".\\initcwnd_data\\bbr\\10\\mlcnetB.cs.wpi.edu_bbr_4\\local.csv"],\
-         [".\\initcwnd_data\\bbr\\20\\mlcnetB.cs.wpi.edu_bbr_0\\local.csv",\
-          ".\\initcwnd_data\\bbr\\20\\mlcnetB.cs.wpi.edu_bbr_1\\local.csv",\
-          ".\\initcwnd_data\\bbr\\20\\mlcnetB.cs.wpi.edu_bbr_2\\local.csv",\
-          ".\\initcwnd_data\\bbr\\20\\mlcnetB.cs.wpi.edu_bbr_3\\local.csv",\
-          ".\\initcwnd_data\\bbr\\20\\mlcnetB.cs.wpi.edu_bbr_4\\local.csv"],\
-         [".\\initcwnd_data\\bbr\\40\\mlcnetB.cs.wpi.edu_bbr_0\\local.csv",\
-          ".\\initcwnd_data\\bbr\\40\\mlcnetB.cs.wpi.edu_bbr_1\\local.csv",\
-          ".\\initcwnd_data\\bbr\\40\\mlcnetB.cs.wpi.edu_bbr_2\\local.csv",\
-          ".\\initcwnd_data\\bbr\\40\\mlcnetB.cs.wpi.edu_bbr_3\\local.csv",\
-          ".\\initcwnd_data\\bbr\\40\\mlcnetB.cs.wpi.edu_bbr_4\\local.csv"]]
-
-hybla = [[".\\initcwnd_data\\hybla\\3\\mlcnetC.cs.wpi.edu_hybla_0\\local.csv",\
-          ".\\initcwnd_data\\hybla\\3\\mlcnetC.cs.wpi.edu_hybla_1\\local.csv",\
-          ".\\initcwnd_data\\hybla\\3\\mlcnetC.cs.wpi.edu_hybla_2\\local.csv",\
-          ".\\initcwnd_data\\hybla\\3\\mlcnetC.cs.wpi.edu_hybla_3\\local.csv",\
-          ".\\initcwnd_data\\hybla\\3\\mlcnetC.cs.wpi.edu_hybla_4\\local.csv"],
-        [".\\initcwnd_data\\hybla\\5\\mlcnetC.cs.wpi.edu_hybla_0\\local.csv",\
-          ".\\initcwnd_data\\hybla\\5\\mlcnetC.cs.wpi.edu_hybla_1\\local.csv",\
-          ".\\initcwnd_data\\hybla\\5\\mlcnetC.cs.wpi.edu_hybla_2\\local.csv",\
-          ".\\initcwnd_data\\hybla\\5\\mlcnetC.cs.wpi.edu_hybla_3\\local.csv",\
-          ".\\initcwnd_data\\hybla\\5\\mlcnetC.cs.wpi.edu_hybla_4\\local.csv"],
-        [".\\initcwnd_data\\hybla\\10\\mlcnetC.cs.wpi.edu_hybla_0\\local.csv",\
-          ".\\initcwnd_data\\hybla\\10\\mlcnetC.cs.wpi.edu_hybla_1\\local.csv",\
-          ".\\initcwnd_data\\hybla\\10\\mlcnetC.cs.wpi.edu_hybla_2\\local.csv",\
-          ".\\initcwnd_data\\hybla\\10\\mlcnetC.cs.wpi.edu_hybla_3\\local.csv",\
-          ".\\initcwnd_data\\hybla\\10\\mlcnetC.cs.wpi.edu_hybla_4\\local.csv"],\
-         [".\\initcwnd_data\\hybla\\20\\mlcnetC.cs.wpi.edu_hybla_0\\local.csv",\
-          ".\\initcwnd_data\\hybla\\20\\mlcnetC.cs.wpi.edu_hybla_1\\local.csv",\
-          ".\\initcwnd_data\\hybla\\20\\mlcnetC.cs.wpi.edu_hybla_2\\local.csv",\
-          ".\\initcwnd_data\\hybla\\20\\mlcnetC.cs.wpi.edu_hybla_3\\local.csv",\
-          ".\\initcwnd_data\\hybla\\20\\mlcnetC.cs.wpi.edu_hybla_4\\local.csv"],\
-         [".\\initcwnd_data\\hybla\\40\\mlcnetC.cs.wpi.edu_hybla_0\\local.csv",\
-          ".\\initcwnd_data\\hybla\\40\\mlcnetC.cs.wpi.edu_hybla_1\\local.csv",\
-          ".\\initcwnd_data\\hybla\\40\\mlcnetC.cs.wpi.edu_hybla_2\\local.csv",\
-          ".\\initcwnd_data\\hybla\\40\\mlcnetC.cs.wpi.edu_hybla_3\\local.csv",\
-          ".\\initcwnd_data\\hybla\\40\\mlcnetC.cs.wpi.edu_hybla_4\\local.csv"]]
-
-names = ["3","5","10","20","40" ]
-index = 0
 
 WIN_DIR = [3,5,10,20,40]
 PCC_DIR = [180000,300000,600000,1200000,2400000]
 
 if (sys.argv[1]=="across"):
     #analysis.py across <initcwnd> <trials>
-    list_algorithms = ["cubic","bbr","hybla"]
+    list_algorithms = ["cubic","bbr","hybla", "cubic_hystart_off"]
     letters = ["A","B","C"]
     initcwnd = int(sys.argv[2])
     num_trials = int(sys.argv[3])
@@ -189,7 +105,7 @@ if (sys.argv[1]=="across"):
     for algo in list_algorithms:
         paths = []
         for trial in range(num_trials):
-            paths.append(f"{os.getcwd()}/initcwnd_data/{algo}/{initcwnd}/mlcnet{letters[i]}.cs.wpi.edu_{algo}_{trial}/local.csv")
+            paths.append(f"./../initcwnd_data/{algo}/{initcwnd}/mlcnet{letters[i]}.cs.wpi.edu_{algo}_{trial}/local.csv")
         print(f"algorithm: {algo}")
         generate_trace(paths,algo,figure)
         figure.update_layout(title=f"initcwnd {initcwnd}", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
@@ -206,33 +122,8 @@ elif (len(sys.argv)==4):
     for inwin in dirs:
         paths = []
         for trial in range(num_trials):
-            paths.append(f"{os.getcwd()}/initcwnd_data/{algorithm}/{inwin}/mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}/local.csv")
+            paths.append(f"./../initcwnd_data/{algorithm}/{inwin}/mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}/local.csv")
         print(f"window: {inwin}")
         generate_trace(paths,inwin,figure)
         figure.update_layout(title=algorithm, xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
     figure.show()   
-else:
-    for inwin in cubic:
-        generate_trace(inwin,names[index],fig_cubic)
-    index += 1
-
-    index = 0
-
-    for inwin in bbr:
-        generate_trace(inwin,names[index],fig_bbr)
-        index += 1
-
-    index = 0
-
-    for inwin in hybla:
-        generate_trace(inwin,names[index],fig_hybla)
-        index += 1
-
-    fig_cubic.update_layout(title="Cubic", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
-    fig_cubic.show()
-
-    fig_bbr.update_layout(title="BBR", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
-    fig_bbr.show()
-
-    fig_hybla.update_layout(title="Hybla", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
-    fig_hybla.show()
