@@ -5,6 +5,11 @@
 # example: watch -n 0.1 "./get_cwnd.sh >> cwnd.csv"
 
 # run away this is scary
+
+if [ ! -f ./cwnd.csv ]; then
+    echo "time,cwnd" > cwnd.csv
+fi
+
 ss -i |  awk '/5201/ {if ($4 != 0) getline; if ($10 != "") print $10}' |  sed 's/^.*://' | sed -e "s/^/$(date "+%Y-%m-%d %H:%M:%S.%6N"),/"
 
 # >>> ss -i
