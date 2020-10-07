@@ -65,7 +65,6 @@ def generate_trace(csv_files, figure):
 
 time_frame = 1
 
-
 WIN_DIR_BBR = [3,5,10,20,40]
 WIN_DIR = [3,5,10,20,40,100,250]
 PCC_DIR = [180000,300000,600000,1200000,2400000]
@@ -90,5 +89,7 @@ if (len(sys.argv)==4):
         print(f"window: {inwin}")
         generate_trace(paths,figure)
         figure.update_layout(title=f"{algorithm} {inwin}", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
+        figure.update_xaxes(range=[0,40])
+        figure.update_yaxes(range=[0,100])
         figure.write_image(f"retransmission_{algorithm}_{inwin}.png")
         figure.show()

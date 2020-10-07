@@ -98,90 +98,33 @@ def generate_trace(csv_files_to_average, label, figure):
     ))
 
 time_frame = 1
-fig_cubic5 = plotly.graph_objects.Figure()
-fig_cubic7 = plotly.graph_objects.Figure()
 
-cubic5 = [[".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],
-         [".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"]]
+WIN_DIR_BBR = [3,5,10,20,40]
+WIN_DIR = [3,5,10,20,40,100,250]
+PCC_DIR = [180000,300000,600000,1200000,2400000]
 
-cubic7 = [[".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],
-         [".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"]]
+if (len(sys.argv)==4):
+    #retransmission_average.py <algorithm> <letter> <trials>
+    num_trials = int(sys.argv[3])
+    mlc_letter = sys.argv[2]
+    algorithm = sys.argv[1]
+    if (algorithm =="pcc"):
+        dirs = PCC_DIR
+    elif (algorithm == "bbr"):
+        dirs = WIN_DIR_BBR
+    else:
+        dirs = WIN_DIR
+    
+    figure = plotly.graph_objects.Figure()
+    for inwin in dirs:
+        paths = []
+        for trial in range(num_trials):
+            paths.append(f"./../initcwnd_data/{algorithm}/{inwin}/mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}/local.csv")
+        print(f"window: {inwin}")
+        generate_trace(paths,inwin,figure)
 
-names = ["3","5","10","20","40","100","250"]
-index = 0
-
-
-for inwin in cubic5:
-    generate_trace(inwin,names[index],fig_cubic5)
-    index += 1
-
-index = 0
-
-for inwin in cubic7:
-    generate_trace(inwin,names[index],fig_cubic7)
-    index += 1
-
-
-fig_cubic5.update_layout(title="Average Retransmission Rate: Cubic (5 traces)", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-fig_cubic5.show()
-
-fig_cubic7.update_layout(title="Average Retransmission Rate: Cubic (7 traces)", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-fig_cubic7.show()
-
-
+    figure.update_layout(title=f"{algorithm} {inwin}", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
+    figure.update_xaxes(range=[0,40])
+    figure.update_yaxes(range=[0,100])
+    figure.write_image(f"average_retransmission_{algorithm}.png")
+    figure.show()

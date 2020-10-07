@@ -98,7 +98,7 @@ PCC_DIR = [180000,300000,600000,1200000,2400000]
 if (sys.argv[1]=="across"):
     #analysis.py across <initcwnd> <trials>
     list_algorithms = ["cubic","bbr","hybla", "cubic_hystart_off"]
-    letters = ["A","B","C"]
+    letters = ["A","B","C","A"]
     initcwnd = int(sys.argv[2])
     num_trials = int(sys.argv[3])
     figure = plotly.graph_objects.Figure()
@@ -111,20 +111,23 @@ if (sys.argv[1]=="across"):
         generate_trace(paths,algo,figure)
         figure.update_layout(title=f"initcwnd {initcwnd}", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
         i+=1
+    figure.update_xaxes(range=[0,40])
+    figure.update_yaxes(range=[0,150])
+    figure.write_image(f"throughput_across_{inwin}.png")
     figure.show()
 elif (len(sys.argv)==4):
     #analysis.py <algorithm> <letter> <trials>
-    num_trials = int(sys.argv[3])
     mlc_letter = sys.argv[2]
+    num_trials = int(sys.argv[3])
     algorithm = sys.argv[1]
-    figure = plotly.graph_objects.Figure()
     if (algorithm =="pcc"):
         dirs = PCC_DIR
     elif (algorithm == "bbr"):
         dirs = WIN_DIR_BBR
     else:
         dirs = WIN_DIR
-    
+
+    figure = plotly.graph_objects.Figure()
     for inwin in dirs:
         paths = []
         for trial in range(num_trials):
@@ -132,4 +135,7 @@ elif (len(sys.argv)==4):
         print(f"window: {inwin}")
         generate_trace(paths,inwin,figure)
         figure.update_layout(title=algorithm, xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
+    figure.update_xaxes(range=[0,40])
+    figure.update_yaxes(range=[0,150])
+    figure.write_image(f"throughput_{algorithm}.png")
     figure.show()   
