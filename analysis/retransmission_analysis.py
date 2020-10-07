@@ -64,75 +64,31 @@ def generate_trace(csv_files, figure):
         ))
 
 time_frame = 1
-# fig3 = plotly.graph_objects.Figure()
-# fig5 = plotly.graph_objects.Figure()
-# fig10 = plotly.graph_objects.Figure()
-# fig20 = plotly.graph_objects.Figure()
-# fig40 = plotly.graph_objects.Figure()
-fig100 = plotly.graph_objects.Figure()
-fig250 = plotly.graph_objects.Figure()
 
-cubic = [[".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\3\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],
-         [".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\5\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\10\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\20\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\40\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\100\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"],\
-         [".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_0\\local.csv",\
-          ".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_1\\local.csv",\
-          ".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_2\\local.csv",\
-          ".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_3\\local.csv",\
-          ".\\initcwnd_data\\cubic\\250\\mlcnetA.cs.wpi.edu_cubic_4\\local.csv"]]
 
-# generate_trace(cubic[0],fig3)
-# generate_trace(cubic[1],fig5)
-# generate_trace(cubic[2],fig10)
-# generate_trace(cubic[3],fig20)
-# generate_trace(cubic[4],fig40)
-generate_trace(cubic[5],fig100)
-generate_trace(cubic[6],fig250)
+WIN_DIR_BBR = [3,5,10,20,40]
+WIN_DIR = [3,5,10,20,40,100,250]
+PCC_DIR = [180000,300000,600000,1200000,2400000]
 
-# fig3.update_layout(title="Cubic 3", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-# fig3.show()
-
-# fig5.update_layout(title="Cubic 5", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-# fig5.show()
-
-# fig10.update_layout(title="Cubic 10", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-# fig10.show()
-
-# fig20.update_layout(title="Cubic 20", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-# fig20.show()
-
-# fig40.update_layout(title="Cubic 40", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-# fig40.show()
-
-fig100.update_layout(title="Cubic 100", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-fig100.show()
-
-fig250.update_layout(title="Cubic 250", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-fig250.show()
+if (len(sys.argv)==4):
+    #retransmission.py <algorithm> <letter> <trials>
+    num_trials = int(sys.argv[3])
+    mlc_letter = sys.argv[2]
+    algorithm = sys.argv[1]
+    if (algorithm =="pcc"):
+        dirs = PCC_DIR
+    elif (algorithm == "bbr"):
+        dirs = WIN_DIR_BBR
+    else:
+        dirs = WIN_DIR
+    
+    for inwin in dirs:
+        figure = plotly.graph_objects.Figure()
+        paths = []
+        for trial in range(num_trials):
+            paths.append(f"./../initcwnd_data/{algorithm}/{inwin}/mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}/local.csv")
+        print(f"window: {inwin}")
+        generate_trace(paths,figure)
+        figure.update_layout(title=f"{algorithm} {inwin}", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
+        figure.write_image(f"retransmission_{algorithm}_{inwin}.png")
+        figure.show()

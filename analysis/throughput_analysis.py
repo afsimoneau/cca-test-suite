@@ -91,7 +91,8 @@ def generate_trace(csv_files_to_average, label, figure):
 
 time_frame = 1
 
-WIN_DIR = [3,5,10,20,40]
+WIN_DIR_BBR = [3,5,10,20,40]
+WIN_DIR = [3,5,10,20,40,100,250]
 PCC_DIR = [180000,300000,600000,1200000,2400000]
 
 if (sys.argv[1]=="across"):
@@ -117,7 +118,12 @@ elif (len(sys.argv)==4):
     mlc_letter = sys.argv[2]
     algorithm = sys.argv[1]
     figure = plotly.graph_objects.Figure()
-    dirs = PCC_DIR if algorithm=="pcc" else WIN_DIR #ternary expression to set what directories we use by algorithm
+    if (algorithm =="pcc"):
+        dirs = PCC_DIR
+    elif (algorithm == "bbr"):
+        dirs = WIN_DIR_BBR
+    else:
+        dirs = WIN_DIR
     
     for inwin in dirs:
         paths = []
