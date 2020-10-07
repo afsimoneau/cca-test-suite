@@ -2,7 +2,7 @@ import csv
 import plotly
 import sys
 import os
-from glob import glob
+import math
 
 def parse_csv(csv_file):
     data_points = []
@@ -47,12 +47,15 @@ def average_data(data_points, time_frame):
     time_frame_max = time_frame
     avg_mbits_per_second_list = []
     seconds_list = []
+    data_points_in_time_frame_list = []
+    standard_error_list = []
     mbits_in_frame = 0
     samples = 0
     index = 0
     while time_frame_max < data_points[-1][1] and index < len(data_points):
         if data_points[index][1] >= time_frame_min and data_points[index][1] < time_frame_max:
             mbits_in_frame += data_points[index][0]
+            data_points_in_time_frame_list.append(data_points[index][0])
             samples += 1
             index += 1
         else:
@@ -60,16 +63,25 @@ def average_data(data_points, time_frame):
                 avg_mbits = mbits_in_frame/samples
                 avg_mbits_per_second = avg_mbits/time_frame
                 avg_mbits_per_second_list.append(avg_mbits_per_second)
+                standard_error_list.append(standard_error(data_points_in_time_frame_list,avg_mbits_per_second,samples))
             except ZeroDivisionError:
                 avg_mbits_per_second_list.append(0)
+                standard_error_list.append(0)
             seconds_list.append(time_frame_min)
             time_frame_min = time_frame_max
             time_frame_max += time_frame
             mbits_in_frame = 0
             samples = 0
-    return [avg_mbits_per_second_list,seconds_list]
+            data_points_in_time_frame_list = []
+    return [avg_mbits_per_second_list,seconds_list,standard_error_list]
     
-def generate_trace(csv_files_to_average, label, figure):
+def standard_error(data_list,average,n):
+    sum_squares = 0
+    for x in data_list:
+        sum_squares += (x-average)**2
+    return (math.sqrt(sum_squares/(n-1)))/(math.sqrt(n))
+
+def generate_trace(csv_files_to_average, label, figure, color):
     total_data_points = []
     data_points = []
     averaged_lists = []
@@ -82,14 +94,34 @@ def generate_trace(csv_files_to_average, label, figure):
 
     total_data_points = sorted(total_data_points,key=lambda x: x[1])
     averaged_lists = average_data(total_data_points, time_frame)
+    x = averaged_lists[1]
+    x_rev = x[::-1]
+    y = averaged_lists[0]
+    y_upper = []
+    y_lower = []
+    for i in range(len(averaged_lists[2])):
+        y_upper.append(averaged_lists[0][i] + averaged_lists[2][i])
+        y_lower.append(averaged_lists[0][i] - averaged_lists[2][i])
+    y_lower = y_lower[::-1]
 
     figure.add_trace(plotly.graph_objects.Scatter(
-        x=averaged_lists[1],
-        y=averaged_lists[0],
-        name=label  
+        x=x+x_rev,
+        y=y_upper+y_lower,
+        fill='toself',
+        fillcolor=f'rgba({color},0.2)',
+        line_color='rgba(255,255,255,0)',
+        showlegend=False,
+        name=label,
+    ))
+    figure.add_trace(plotly.graph_objects.Scatter(
+        x=x, y=y,
+        name=label,
+        line_color=f'rgb({color})'
     ))
 
+
 time_frame = 1
+colors = ['255,0,0','0,255,0','0,0,255','255,0,255','0,255,255','255,255,0','0,128,255']
 
 WIN_DIR_BBR = [3,5,10,20,40]
 WIN_DIR = [3,5,10,20,40,100,250]
@@ -98,7 +130,7 @@ PCC_DIR = [180000,300000,600000,1200000,2400000]
 if (sys.argv[1]=="across"):
     #analysis.py across <initcwnd> <trials>
     list_algorithms = ["cubic","bbr","hybla", "cubic_hystart_off"]
-    letters = ["A","B","C"]
+    letters = ["A","B","C","A"]
     initcwnd = int(sys.argv[2])
     num_trials = int(sys.argv[3])
     figure = plotly.graph_objects.Figure()
@@ -106,11 +138,12 @@ if (sys.argv[1]=="across"):
     for algo in list_algorithms:
         paths = []
         for trial in range(num_trials):
-            paths.append(f"./../initcwnd_data/{algo}/{initcwnd}/mlcnet{letters[i]}.cs.wpi.edu_{algo}_{trial}/local.csv")
+            paths.append(os.path.join('initcwnd_data',f'{algo}',f'{initcwnd}',f'mlcnet{letters[i]}.cs.wpi.edu_{algo}_{trial}','local.csv'))
         print(f"algorithm: {algo}")
-        generate_trace(paths,algo,figure)
+        generate_trace(paths,algo,figure,colors[i])
         figure.update_layout(title=f"initcwnd {initcwnd}", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
         i+=1
+    figure.update_traces(mode='lines')
     figure.show()
 elif (len(sys.argv)==4):
     #analysis.py <algorithm> <letter> <trials>
@@ -124,12 +157,14 @@ elif (len(sys.argv)==4):
         dirs = WIN_DIR_BBR
     else:
         dirs = WIN_DIR
-    
+    i = 0
     for inwin in dirs:
         paths = []
         for trial in range(num_trials):
-            paths.append(f"./../initcwnd_data/{algorithm}/{inwin}/mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}/local.csv")
+            paths.append(os.path.join('initcwnd_data',f'{algorithm}',f'{inwin}',f'mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}','local.csv'))
         print(f"window: {inwin}")
-        generate_trace(paths,inwin,figure)
+        generate_trace(paths,inwin,figure,colors[i])
         figure.update_layout(title=algorithm, xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
+        i+=1
+    figure.update_traces(mode='lines')
     figure.show()   
