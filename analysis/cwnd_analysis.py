@@ -62,7 +62,7 @@ def main():
     dir20 = './../initcwnd_data/cubic_cwnd/hystart_off/20/'
     dir40 = './../initcwnd_data/cubic_cwnd/hystart_off/40/'
     dir100 = './../initcwnd_data/cubic_cwnd/hystart_off/100/'
-    dir250 = './../initcwnd_data/cubic_cwnd/hystart_off/100/'
+    dir250 = './../initcwnd_data/cubic_cwnd/hystart_off/250/'
 
     result_df5 = getAverage(dir5)
     result_df10 = getAverage(dir10)
@@ -92,7 +92,7 @@ def main():
                              mode='lines',
                              name='250'))
 
-    fig.update_layout(title='Average cwnd',
+    fig.update_layout(title='Average cwnd Cubic Hystart Off',
                       xaxis_title='Time (s)',
                       yaxis_title='cwnd')
 
