@@ -123,10 +123,10 @@ def generate_trace(csv_files_to_average, label, figure, color):
 time_frame = 1
 colors = ['255,0,0','0,255,0','0,0,255','255,0,255','0,255,255','255,255,0','0,128,255']
 
-WIN_DIR_BBR = [3,5,10,20,40]
 WIN_DIR = [3,5,10,20,40,100,250]
 PCC_DIR = [180000,300000,600000,1200000,2400000]
 
+os.chdir("..")
 if (sys.argv[1]=="across"):
     #analysis.py across <initcwnd> <trials>
     list_algorithms = ["cubic","bbr","hybla", "cubic_hystart_off"]
@@ -146,6 +146,7 @@ if (sys.argv[1]=="across"):
     figure.update_traces(mode='lines')
     figure.update_xaxes(range=[0,40])
     figure.update_yaxes(range=[0,150])
+    os.chdir("graphs")
     figure.write_image(f"throughput_across_{initcwnd}.png")
     figure.show()
 elif (len(sys.argv)==4):
@@ -155,8 +156,6 @@ elif (len(sys.argv)==4):
     algorithm = sys.argv[1]
     if (algorithm =="pcc"):
         dirs = PCC_DIR
-    elif (algorithm == "bbr"):
-        dirs = WIN_DIR_BBR
     else:
         dirs = WIN_DIR
     i = 0
@@ -172,5 +171,6 @@ elif (len(sys.argv)==4):
     figure.update_traces(mode='lines')
     figure.update_xaxes(range=[0,40])
     figure.update_yaxes(range=[0,150])
+    os.chdir("graphs")
     figure.write_image(f"throughput_{algorithm}.png")
     figure.show()   
