@@ -8,72 +8,50 @@ def parse_csv(csv_file):
     data_points = []
     csv_reader = csv.reader(csv_file, delimiter=',')
     line_count = 0
-    previous_bytes = 0
     start_time = None
     for row in csv_reader:
         if line_count == 0:
             pass
         else:
-            if row[4] != "192.168.1.102":
+            if row[4] != "192.168.1.102" and len(row[9]) > 0:
                 if start_time == None:
                     start_time = sum(x * float(t) for x, t in zip([3600, 60, 1], row[11][12:30].split(":")))
-                    data_points.append([0,0])
-                elif int(row[8]) >= previous_bytes:
-                    data_points.append([(int(row[8])-previous_bytes),sum(x * float(t) for x, t in zip([3600, 60, 1], row[11][12:30].split(":"))) - start_time])
-                    previous_bytes = int(row[8])
+                    data_points.append([float(row[9]),0])
+                else:
+                    data_points.append([float(row[9]),sum(x * float(t) for x, t in zip([3600, 60, 1], row[11][12:30].split(":"))) - start_time])
         line_count += 1
     return data_points
-
-def totals_per_time_frame(data_points, time_frame):
-    time_frame_min = 0
-    time_frame_max = time_frame
-    total_mbits_list = []
-    bytes_in_frame = 0
-    index = 0
-    while time_frame_max < data_points[-1][1] and index < len(data_points):
-        if data_points[index][1] >= time_frame_min and data_points[index][1] < time_frame_max:
-            bytes_in_frame += data_points[index][0]
-            index += 1
-        else:
-            total_megabits = 8*bytes_in_frame/1000000
-            total_mbits_list.append([total_megabits,time_frame_min])
-            time_frame_min = time_frame_max
-            time_frame_max += time_frame
-            bytes_in_frame = 0
-    return total_mbits_list
 
 def average_data(data_points, time_frame):
     time_frame_min = 0
     time_frame_max = time_frame
-    avg_mbits_per_second_list = []
+    avg_rtt_list = []
     seconds_list = []
     data_points_in_time_frame_list = []
     standard_error_list = []
-    mbits_in_frame = 0
+    rtt_sum_in_frame = 0
     samples = 0
     index = 0
     while time_frame_max < data_points[-1][1] and index < len(data_points):
         if data_points[index][1] >= time_frame_min and data_points[index][1] < time_frame_max:
-            mbits_in_frame += data_points[index][0]
+            rtt_sum_in_frame += data_points[index][0]
             data_points_in_time_frame_list.append(data_points[index][0])
             samples += 1
             index += 1
         else:
             try:
-                avg_mbits = mbits_in_frame/samples
-                avg_mbits_per_second = avg_mbits/time_frame
-                avg_mbits_per_second_list.append(avg_mbits_per_second)
-                standard_error_list.append(standard_error(data_points_in_time_frame_list,avg_mbits_per_second,samples))
+                avg_rtt = 1000*rtt_sum_in_frame/samples #milliseconds
+                avg_rtt_list.append(avg_rtt)
+                standard_error_list.append(standard_error(data_points_in_time_frame_list,avg_rtt,samples))
             except ZeroDivisionError:
-                avg_mbits_per_second_list.append(0)
-                standard_error_list.append(0)
+                pass
             seconds_list.append(time_frame_min)
             time_frame_min = time_frame_max
             time_frame_max += time_frame
-            mbits_in_frame = 0
+            rtt_sum_in_frame = 0
             samples = 0
             data_points_in_time_frame_list = []
-    return [avg_mbits_per_second_list,seconds_list,standard_error_list]
+    return [avg_rtt_list,seconds_list,standard_error_list]
     
 def standard_error(data_list,average,n):
     sum_squares = 0
@@ -88,7 +66,6 @@ def generate_trace(csv_files_to_average, label, figure, color):
 
     for x in csv_files_to_average:
         data_points = parse_csv(open(x))
-        data_points = totals_per_time_frame(data_points, time_frame)
         for y in data_points:
             total_data_points.append(y)
 
@@ -141,12 +118,12 @@ if (sys.argv[1]=="across"):
             paths.append(os.path.join('initcwnd_data',f'{algo}',f'{initcwnd}',f'mlcnet{letters[i]}.cs.wpi.edu_{algo}_{trial}','local.csv'))
         print(f"algorithm: {algo}")
         generate_trace(paths,algo,figure,colors[i])
-        figure.update_layout(title=f"initcwnd {initcwnd}", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
+        figure.update_layout(title=f"initcwnd {initcwnd}", xaxis_title="Time (s)", yaxis_title="Average RTT (ms)")
         i+=1
     figure.update_traces(mode='lines')
     figure.update_xaxes(range=[0,40])
-    figure.update_yaxes(range=[0,150])
-    # figure.write_image(f"throughput_across_{initcwnd}.png")
+    # figure.update_yaxes(range=[0,150])
+    # figure.write_image(f"rtt_across_{initcwnd}.png")
     figure.show()
 elif (len(sys.argv)==4):
     #analysis.py <algorithm> <letter> <trials>
@@ -167,10 +144,10 @@ elif (len(sys.argv)==4):
             paths.append(os.path.join('initcwnd_data',f'{algorithm}',f'{inwin}',f'mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}','local.csv'))
         print(f"window: {inwin}")
         generate_trace(paths,inwin,figure,colors[i])
-        figure.update_layout(title=algorithm, xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
+        figure.update_layout(title=algorithm, xaxis_title="Time (s)", yaxis_title="Average RTT (ms)")
         i+=1
     figure.update_traces(mode='lines')
     figure.update_xaxes(range=[0,40])
-    figure.update_yaxes(range=[0,150])
-    # figure.write_image(f"throughput_{algorithm}.png")
+    # figure.update_yaxes(range=[0,150])
+    # figure.write_image(f"rtt_{algorithm}.png")
     figure.show()   
