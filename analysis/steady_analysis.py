@@ -42,7 +42,7 @@ def main():
                 print(row)
                 dataPoints = dataPoints.append(row, ignore_index=True)
     print(dataPoints)
-    figure = px.scatter(data_frame=dataPoints,x="inwin",y="time", color="algo")
+    figure = px.scatter(data_frame=dataPoints,x="inwin",y="time", color="algo",labels={"inwin":"Initial Window Size", "time":"Time (s)"})
     figure.show()
 
 
