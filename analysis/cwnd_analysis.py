@@ -10,8 +10,21 @@ def dateparse(x): return datetime.strptime(x, '%Y-%m-%d %H:%M:%S.%f')
 
 def getAverage(dir):
     cwnds = glob(dir + '**/cwnd.csv')
+    for file1 in cwnds:
+        f = open(file1, 'r+')
+        lines = f.readlines()  # read old content
+        print(file1)
+        if "time" not in lines[0]:
+            print("replace")
+            f.seek(0)  # go back to the beginning of the file
+            f.write("time,cwnd\n")  # write new content at the beginning
+            for line in lines:  # write old content after new
+                f.write(line)
+            f.close()
+    # return
     dfs = []
     for path in cwnds:
+        print(path)
         df = pd.read_csv(path, parse_dates=[
                          'time'], date_parser=dateparse, index_col=0)
         dfs.append(df)
@@ -57,42 +70,45 @@ def main():
     #     # './../initcwnd_data/cubic/100/mlcnetA.cs.wpi.edu_cubic_test_0/cwnd.csv')
     #     './../initcwnd_data/cubic_cwnd/10/mlcnetA.cs.wpi.edu_cubic_2/cwnd.csv', parse_dates=['time'], date_parser=dateparse, index_col=0)
 
-    dir5 = './../initcwnd_data/cubic_cwnd/hystart_off/5/'
-    dir10 = './../initcwnd_data/cubic_cwnd/hystart_off/10/'
-    dir20 = './../initcwnd_data/cubic_cwnd/hystart_off/20/'
-    dir40 = './../initcwnd_data/cubic_cwnd/hystart_off/40/'
-    dir100 = './../initcwnd_data/cubic_cwnd/hystart_off/100/'
-    dir250 = './../initcwnd_data/cubic_cwnd/hystart_off/250/'
+    dir3_on = './../initcwnd_data/cubic_cwnd/hystart_on/3/'
+    dir10_on = './../initcwnd_data/cubic_cwnd/hystart_on/10/'
+    dir40_on = './../initcwnd_data/cubic_cwnd/hystart_on/40/'
 
-    result_df5 = getAverage(dir5)
-    result_df10 = getAverage(dir10)
-    result_df20 = getAverage(dir20)
-    result_df40 = getAverage(dir40)
-    result_df100 = getAverage(dir100)
-    result_df250 = getAverage(dir250)
+    dir3_off = './../initcwnd_data/cubic_cwnd/hystart_off/3/'
+    dir10_off = './../initcwnd_data/cubic_cwnd/hystart_off/10/'
+    dir40_off = './../initcwnd_data/cubic_cwnd/hystart_off/40/'
+
+    result_df3_on = getAverage(dir3_on)
+    result_df10_on = getAverage(dir10_on)
+    result_df40_on = getAverage(dir40_on)
+
+    result_df3_off = getAverage(dir3_off)
+    result_df10_off = getAverage(dir10_off)
+    result_df40_off = getAverage(dir40_off)
 
     fig = go.Figure()
 
-    fig.add_trace(go.Scatter(x=result_df5.index, y=result_df5['mean'],
+    fig.add_trace(go.Scatter(x=result_df3_on.index, y=result_df3_on['mean'],
                              mode='lines',
-                             name='5'))
-    fig.add_trace(go.Scatter(x=result_df10.index, y=result_df10['mean'],
+                             name='3 hystart on'))
+    fig.add_trace(go.Scatter(x=result_df10_on.index, y=result_df10_on['mean'],
                              mode='lines',
-                             name='10'))
-    fig.add_trace(go.Scatter(x=result_df20.index, y=result_df20['mean'],
+                             name='10 hystart on'))
+    fig.add_trace(go.Scatter(x=result_df40_on.index, y=result_df40_on['mean'],
                              mode='lines',
-                             name='20'))
-    fig.add_trace(go.Scatter(x=result_df40.index, y=result_df40['mean'],
-                             mode='lines',
-                             name='40'))
-    fig.add_trace(go.Scatter(x=result_df100.index, y=result_df100['mean'],
-                             mode='lines',
-                             name='100'))
-    fig.add_trace(go.Scatter(x=result_df250.index, y=result_df250['mean'],
-                             mode='lines',
-                             name='250'))
+                             name='40 hystart on'))
 
-    fig.update_layout(title='Average cwnd Cubic Hystart Off',
+    # fig.add_trace(go.Scatter(x=result_df3_off.index, y=result_df3_off['mean'],
+    #                          mode='lines',
+    #                          name='3 hystart off'))
+    # fig.add_trace(go.Scatter(x=result_df10_off.index, y=result_df10_off['mean'],
+    #                          mode='lines',
+    #                          name='10 hystart off'))
+    # fig.add_trace(go.Scatter(x=result_df40_off.index, y=result_df40_off['mean'],
+    #                          mode='lines',
+    #                          name='40 hystart off'))
+
+    fig.update_layout(title='Average CWND Cubic Hystart On',
                       xaxis_title='Time (s)',
                       yaxis_title='cwnd')
 
