@@ -59,12 +59,12 @@ def average_data(data_points, time_frame):
             samples += 1
             index += 1
         else:
-            try:
+            if samples > 0:
                 avg_mbits = mbits_in_frame/samples
                 avg_mbits_per_second = avg_mbits/time_frame
                 avg_mbits_per_second_list.append(avg_mbits_per_second)
                 margin_of_error_list.append(margin_of_error(data_points_in_time_frame_list,avg_mbits_per_second,samples))
-            except ZeroDivisionError:
+            else:
                 avg_mbits_per_second_list.append(0)
                 margin_of_error_list.append(0)
             seconds_list.append(time_frame_min)
