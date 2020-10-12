@@ -28,7 +28,7 @@ def average_data(data_points, time_frame):
     avg_rtt_list = []
     seconds_list = []
     data_points_in_time_frame_list = []
-    standard_error_list = []
+    margin_of_error_list = []
     rtt_sum_in_frame = 0
     samples = 0
     index = 0
@@ -39,25 +39,23 @@ def average_data(data_points, time_frame):
             samples += 1
             index += 1
         else:
-            try:
+            if samples > 0:
                 avg_rtt = 1000*rtt_sum_in_frame/samples #milliseconds
                 avg_rtt_list.append(avg_rtt)
-                standard_error_list.append(standard_error(data_points_in_time_frame_list,avg_rtt,samples))
-            except ZeroDivisionError:
-                pass
+                margin_of_error_list.append(margin_of_error(data_points_in_time_frame_list,avg_rtt,samples))
             seconds_list.append(time_frame_min)
             time_frame_min = time_frame_max
             time_frame_max += time_frame
             rtt_sum_in_frame = 0
             samples = 0
             data_points_in_time_frame_list = []
-    return [avg_rtt_list,seconds_list,standard_error_list]
+    return [avg_rtt_list,seconds_list,margin_of_error_list]
     
-def standard_error(data_list,average,n):
+def margin_of_error(data_list,average,n):
     sum_squares = 0
     for x in data_list:
         sum_squares += (x-average)**2
-    return (math.sqrt(sum_squares/(n-1)))/(math.sqrt(n))
+    return 1.960*(math.sqrt(sum_squares/(n-1)))/(math.sqrt(n))
 
 def generate_trace(csv_files_to_average, label, figure, color):
     total_data_points = []
@@ -115,7 +113,7 @@ if (sys.argv[1]=="across"):
     for algo in list_algorithms:
         paths = []
         for trial in range(num_trials):
-            paths.append(os.path.join('initcwnd_data',f'{algo}',f'{initcwnd}',f'mlcnet{letters[i]}.cs.wpi.edu_{algo}_{trial}','local.csv'))
+            paths.append(os.path.join('initcwnd_data',f'{algo}',f'{initcwnd}',f'mlcnet{letters[i]}.cs.wpi.edu_{algo}_{trial}',f'mlcnet{letters[i]}.cs.wpi.edu.csv'))
         print(f"algorithm: {algo}")
         generate_trace(paths,algo,figure,colors[i])
         figure.update_layout(title=f"initcwnd {initcwnd}", xaxis_title="Time (s)", yaxis_title="Average RTT (ms)")
@@ -141,7 +139,7 @@ elif (len(sys.argv)==4):
     for inwin in dirs:
         paths = []
         for trial in range(num_trials):
-            paths.append(os.path.join('initcwnd_data',f'{algorithm}',f'{inwin}',f'mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}','local.csv'))
+            paths.append(os.path.join('initcwnd_data',f'{algorithm}',f'{inwin}',f'mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}',f'mlcnet{mlc_letter}.cs.wpi.edu.csv'))
         print(f"window: {inwin}")
         generate_trace(paths,inwin,figure,colors[i])
         figure.update_layout(title=algorithm, xaxis_title="Time (s)", yaxis_title="Average RTT (ms)")
@@ -151,3 +149,21 @@ elif (len(sys.argv)==4):
     # figure.update_yaxes(range=[0,150])
     # figure.write_image(f"rtt_{algorithm}.png")
     figure.show()   
+else:
+    mlc_letter = 'A'
+    num_trials = 5
+    algorithm = "cubic"
+    dirs = WIN_DIR
+    figure = plotly.graph_objects.Figure()
+    inwin = '10'
+    paths = []
+    for trial in range(num_trials):
+        paths.append(os.path.join('initcwnd_data',f'{algorithm}',f'{inwin}',f'mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}',f'mlcnet{mlc_letter}.cs.wpi.edu.csv'))
+    print(f"window: {inwin}")
+    generate_trace(paths,inwin,figure,colors[0])
+    figure.update_layout(title=algorithm, xaxis_title="Time (s)", yaxis_title="Average RTT (ms)")     
+    figure.update_traces(mode='lines')
+    figure.update_xaxes(range=[0,40])
+    # figure.update_yaxes(range=[0,150])
+    # figure.write_image(f"rtt_{algorithm}.png")
+    figure.show()  

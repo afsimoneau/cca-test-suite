@@ -48,7 +48,7 @@ def average_data(data_points, time_frame):
     avg_mbits_per_second_list = []
     seconds_list = []
     data_points_in_time_frame_list = []
-    standard_error_list = []
+    margin_of_error_list = []
     mbits_in_frame = 0
     samples = 0
     index = 0
@@ -63,23 +63,23 @@ def average_data(data_points, time_frame):
                 avg_mbits = mbits_in_frame/samples
                 avg_mbits_per_second = avg_mbits/time_frame
                 avg_mbits_per_second_list.append(avg_mbits_per_second)
-                standard_error_list.append(standard_error(data_points_in_time_frame_list,avg_mbits_per_second,samples))
+                margin_of_error_list.append(margin_of_error(data_points_in_time_frame_list,avg_mbits_per_second,samples))
             except ZeroDivisionError:
                 avg_mbits_per_second_list.append(0)
-                standard_error_list.append(0)
+                margin_of_error_list.append(0)
             seconds_list.append(time_frame_min)
             time_frame_min = time_frame_max
             time_frame_max += time_frame
             mbits_in_frame = 0
             samples = 0
             data_points_in_time_frame_list = []
-    return [avg_mbits_per_second_list,seconds_list,standard_error_list]
+    return [avg_mbits_per_second_list,seconds_list,margin_of_error_list]
     
-def standard_error(data_list,average,n):
+def margin_of_error(data_list,average,n):
     sum_squares = 0
     for x in data_list:
         sum_squares += (x-average)**2
-    return (math.sqrt(sum_squares/(n-1)))/(math.sqrt(n))
+    return 1.960*(math.sqrt(sum_squares/(n-1)))/(math.sqrt(n))
 
 def generate_trace(csv_files_to_average, label, figure, color):
     total_data_points = []
