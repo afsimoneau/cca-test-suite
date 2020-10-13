@@ -127,54 +127,40 @@ def margin_of_error(data_list,average,n):
         sum_squares += (x-average)**2
     return 1.960*(math.sqrt(sum_squares/(n-1)))/(math.sqrt(n))
 
-def generate_trace(csv_files_to_average, label, figure):
+def generate_trace(csv_files_to_average, time_frame):
     total_data_points = []
     data_points = []
     averaged_lists = []
-
     for x in csv_files_to_average:
         data_points = parse_csv(open(x))
         data_points = totals_per_time_frame(data_points, time_frame)
         for y in data_points:
             total_data_points.append(y)
-
     total_data_points = sorted(total_data_points,key=lambda x: x[1])
     averaged_lists = average_data(total_data_points, time_frame)
+    x = averaged_lists[1]
+    x_rev = x[::-1]
+    y = averaged_lists[0]
+    y_upper = []
+    y_lower = []
+    for i in range(len(averaged_lists[2])):
+        y_upper.append(averaged_lists[0][i] + averaged_lists[2][i])
+        y_lower.append(averaged_lists[0][i] - averaged_lists[2][i])
+    y_lower = y_lower[::-1]
+    return [x,y,x+x_rev,y_upper+y_lower]
 
-    figure.add_trace(plotly.graph_objects.Scatter(
-        x=averaged_lists[1],
-        y=averaged_lists[0],
-        name=label  
-    ))
+def run_retransmission_analysis(files,time_frame=1):
+    """Point of entry, only call this function
 
-time_frame = 1
+    Args:
+        files (List[String]): List of file locations (trials from same data set, ex. cubic 10 or hybla 40)
+        time_frame (int, optional): seconds between data points. Defaults to 1.
 
-WIN_DIR_BBR = [3,5,10,20,40]
-WIN_DIR = [3,5,10,20,40,100,250]
-PCC_DIR = [180000,300000,600000,1200000,2400000]
-
-if (len(sys.argv)==4):
-    #retransmission_average.py <algorithm> <letter> <trials>
-    num_trials = int(sys.argv[3])
-    mlc_letter = sys.argv[2]
-    algorithm = sys.argv[1]
-    if (algorithm =="pcc"):
-        dirs = PCC_DIR
-    elif (algorithm == "bbr"):
-        dirs = WIN_DIR_BBR
-    else:
-        dirs = WIN_DIR
-    
-    figure = plotly.graph_objects.Figure()
-    for inwin in dirs:
-        paths = []
-        for trial in range(num_trials):
-            paths.append(f"./../initcwnd_data/{algorithm}/{inwin}/mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}/local.csv")
-        print(f"window: {inwin}")
-        generate_trace(paths,inwin,figure)
-
-    figure.update_layout(title=f"{algorithm} {inwin}", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-    figure.update_xaxes(range=[0,40])
-    figure.update_yaxes(range=[0,100])
-    figure.write_image(f"average_retransmission_{algorithm}.png")
-    figure.show()
+    Returns:
+        List[List[float],List[float],List[float],List[float]]: List of four lists:
+                                                                1. x values (times)
+                                                                2. y values (throughput)
+                                                                3. x values for margin of error
+                                                                4. y values for margin of error
+    """
+    return generate_trace(files,time_frame)
