@@ -81,17 +81,15 @@ def margin_of_error(data_list,average,n):
         sum_squares += (x-average)**2
     return 1.960*(math.sqrt(sum_squares/(n-1)))/(math.sqrt(n))
 
-def generate_trace(csv_files_to_average, label, figure, color):
+def generate_trace(csv_files_to_average,time_frame):
     total_data_points = []
     data_points = []
     averaged_lists = []
-
     for x in csv_files_to_average:
         data_points = parse_csv(open(x))
         data_points = totals_per_time_frame(data_points, time_frame)
         for y in data_points:
             total_data_points.append(y)
-
     total_data_points = sorted(total_data_points,key=lambda x: x[1])
     averaged_lists = average_data(total_data_points, time_frame)
     x = averaged_lists[1]
@@ -103,74 +101,20 @@ def generate_trace(csv_files_to_average, label, figure, color):
         y_upper.append(averaged_lists[0][i] + averaged_lists[2][i])
         y_lower.append(averaged_lists[0][i] - averaged_lists[2][i])
     y_lower = y_lower[::-1]
+    return [x,y,x+x_rev,y_upper+y_lower]
 
-    figure.add_trace(plotly.graph_objects.Scatter(
-        x=x+x_rev,
-        y=y_upper+y_lower,
-        fill='toself',
-        fillcolor=f'rgba({color},0.2)',
-        line_color='rgba(255,255,255,0)',
-        # showlegend=False,
-        name=label,
-    ))
-    figure.add_trace(plotly.graph_objects.Scatter(
-        x=x, y=y,
-        name=label,
-        line_color=f'rgb({color})'
-    ))
+def run_throughput_analysis(files,time_frame=1):
+    """Point of entry, only call this function
 
+    Args:
+        files (List[String]): List of file locations (trials from same data set, ex. cubic 10 or hybla 40)
+        time_frame (int, optional): seconds between data points. Defaults to 1.
 
-time_frame = 1
-colors = ['255,0,0','0,255,0','0,0,255','255,0,255','0,255,255','255,255,0','0,128,255']
-
-WIN_DIR = [3,5,10,20,40,100,250]
-PCC_DIR = [180000,300000,600000,1200000,2400000]
-
-os.chdir("..")
-if (sys.argv[1]=="across"):
-    #analysis.py across <initcwnd> <trials>
-    list_algorithms = ["cubic","bbr","hybla", "cubic_hystart_off"]
-    letters = ["A","B","C","A"]
-    initcwnd = int(sys.argv[2])
-    num_trials = int(sys.argv[3])
-    figure = plotly.graph_objects.Figure()
-    i = 0
-    for algo in list_algorithms:
-        paths = []
-        for trial in range(num_trials):
-            paths.append(os.path.join('initcwnd_data',f'{algo}',f'{initcwnd}',f'mlcnet{letters[i]}.cs.wpi.edu_{algo}_{trial}','local.csv'))
-        print(f"algorithm: {algo}")
-        generate_trace(paths,algo,figure,colors[i])
-        figure.update_layout(title=f"initcwnd {initcwnd}", xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
-        i+=1
-    figure.update_traces(mode='lines')
-    figure.update_xaxes(range=[0,40])
-    figure.update_yaxes(range=[0,150])
-    os.chdir("graphs")
-    figure.write_image(f"throughput_across_{initcwnd}.png")
-    figure.show()
-elif (len(sys.argv)==4):
-    #analysis.py <algorithm> <letter> <trials>
-    mlc_letter = sys.argv[2]
-    num_trials = int(sys.argv[3])
-    algorithm = sys.argv[1]
-    if (algorithm =="pcc"):
-        dirs = PCC_DIR
-    else:
-        dirs = WIN_DIR
-    i = 0
-    figure = plotly.graph_objects.Figure()
-    for inwin in dirs:
-        paths = []
-        for trial in range(num_trials):
-            paths.append(os.path.join('initcwnd_data',f'{algorithm}',f'{inwin}',f'mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}','local.csv'))
-        print(f"window: {inwin}")
-        generate_trace(paths,inwin,figure,colors[i])
-        figure.update_layout(title=algorithm, xaxis_title="Time (s)", yaxis_title="Throughput (Mb/s)")
-        i+=1
-    figure.update_traces(mode='lines')
-    figure.update_xaxes(range=[0,40])
-    figure.update_yaxes(range=[0,150])
-    os.chdir("graphs")
-    figure.write_image(f"throughput_{algorithm}.png")
-    figure.show()   
+    Returns:
+        List[List[float],List[float],List[float],List[float]]: List of four lists:
+                                                                1. x values (times)
+                                                                2. y values (throughput)
+                                                                3. x values for margin of error
+                                                                4. y values for margin of error
+    """
+    return generate_trace(files,time_frame)
