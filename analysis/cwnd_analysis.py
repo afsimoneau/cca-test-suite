@@ -21,10 +21,12 @@ def getAverage(dir):
             for line in lines:  # write old content after new
                 f.write(line)
             f.close()
-    # return
+
+    # print(cwnds)
+
     dfs = []
     for path in cwnds:
-        print(path)
+        # print(path)
         df = pd.read_csv(path, parse_dates=[
                          'time'], date_parser=dateparse, index_col=0)
         dfs.append(df)
@@ -66,83 +68,45 @@ def getAverage(dir):
 
 
 def main():
-    # df = pd.read_csv(
-    #     # './../initcwnd_data/cubic/100/mlcnetA.cs.wpi.edu_cubic_test_0/cwnd.csv')
-    #     './../initcwnd_data/cubic_cwnd/10/mlcnetA.cs.wpi.edu_cubic_2/cwnd.csv', parse_dates=['time'], date_parser=dateparse, index_col=0)
+    init_cwnds = ['3', '10', '40']
+    algos = ['bbr', 'cubic_hystart_off', 'cubic_hystart_on', 'hybla', 'pcc']
 
-    dir3 = './../final_data/hybla/3/'
-    dir10 = './../final_data/hybla/10/'
-    dir40 = './../final_data/hybla/40/'
+    dirs = {}
 
-    # dir3_off = './../initcwnd_data/cubic_cwnd/hystart_off/3/'
-    # dir10_off = './../initcwnd_data/cubic_cwnd/hystart_off/10/'
-    # dir250_off = './../initcwnd_data/cubic_cwnd/hystart_off/250/'
+    for algo in algos:
+        for init_cwnd in init_cwnds:
+            if algo == 'pcc':
+                init_cwnd = str(int(init_cwnd) * 60000)
 
-    result_df3 = getAverage(dir3)
-    result_df10 = getAverage(dir10)
-    result_df40 = getAverage(dir40)
+            if algo not in dirs:
+                dirs[algo] = []
 
-    # result_df3_off = getAverage(dir3_off)
-    # result_df10_off = getAverage(dir10_off)
-    # result_df250_off = getAverage(dir250_off)
+            dirs[algo].append(f'./../final_data/{algo}/{init_cwnd}/')
 
-    fig = go.Figure()
+    print(dirs['bbr'])
 
-    fig.add_trace(go.Scatter(x=result_df3.index, y=result_df3['mean'],
-                             mode='lines',
-                             name='3 hystart on'))
-    fig.add_trace(go.Scatter(x=result_df10.index, y=result_df10['mean'],
-                             mode='lines',
-                             name='10 hystart on'))
-    fig.add_trace(go.Scatter(x=result_df40.index, y=result_df40['mean'],
-                             mode='lines',
-                             name='40 hystart on'))
+    results = []
+    for dir in dirs['bbr']:
+        name = ' '.join(dir.split('/')[-3:-1])
+        print(name)
+        results.append((getAverage(dir), name))
 
-    # fig.add_trace(go.Scatter(x=result_df10_off.index, y=result_df10_off['mean'],
+    # fig = go.Figure()
+
+    # fig.add_trace(go.Scatter(x=result_df3.index, y=result_df3['mean'],
     #                          mode='lines',
-    #                          name='10 hystart off'))
-    # fig.add_trace(go.Scatter(x=result_df250_off.index, y=result_df250_off['mean'],
+    #                          name='3 hystart on'))
+    # fig.add_trace(go.Scatter(x=result_df10.index, y=result_df10['mean'],
     #                          mode='lines',
-    #                          name='250 hystart off'))
-    # fig.add_trace(go.Scatter(x=result_df40_off.index, y=result_df40_off['mean'],
+    #                          name='10 hystart on'))
+    # fig.add_trace(go.Scatter(x=result_df40.index, y=result_df40['mean'],
     #                          mode='lines',
-    #                          name='40 hystart off'))
+    #                          name='40 hystart on'))
 
-    fig.update_layout(title='Average CWND Cubic Hystart On',
-                      xaxis_title='Time (s)',
-                      yaxis_title='cwnd')
+    # fig.update_layout(title='Average CWND Cubic Hystart On',
+    #                   xaxis_title='Time (s)',
+    #                   yaxis_title='cwnd')
 
-    fig.show()
-
-# fig = px.line(result_df0, x=result_df0.index, y='mean')
-# fig.show()
-
-# fig = px.line(result_df1, x=result_df1.index, y='mean')
-# fig.show()
-
-# fig = px.line(result_df, x=result_df.index, y=[
-#               'cwnd' + str(i) for i in range(5)])
-# fig.show()
-
-# average = pd.DataFrame()
-# average['cwnd'] = df["cwnd"].resample('0.5S').mean()
-
-# start = df.first_valid_index()
-
-# df["delta"] = [(end - start).total_seconds()
-#                for end in (df.index)]
-
-# fig = px.line(df, x='delta', y="cwnd")
-
-# start = average.first_valid_index()
-
-# average["delta"] = [(end - start).total_seconds()
-#                     for end in (average.index)]
-
-# fig = px.line(average, x='delta', y="cwnd")
-
-# fig.show()
-
-
+    # fig.show()
 if __name__ == "__main__":
     main()

@@ -2,3 +2,4 @@
 .ds_store
 ~$
 *.pcap
+*__pycache__
