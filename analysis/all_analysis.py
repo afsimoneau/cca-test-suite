@@ -2,9 +2,13 @@ import plotly.express as px
 import plotly.graph_objects as go
 import plotly.colors
 from plotly.subplots import make_subplots
-from pathlib import Path
+import glob as glob
+import retransmission_analysis as retransmission_analysis
+import throughput_analysis as throughput_analysis
+import retransmission_analysis as retransmission_analysis
+import cwnd_analysis as cwnd_analysis
 
-import cwnd_analysis
+from pathlib import Path
 
 # returns a dictionary of all final_data directories
 # example: dirs['bbr'] => ['./../final_data/bbr/3/',...]
@@ -60,13 +64,22 @@ def main():
             rtt[algo] = []
             retransmissions[algo] = []
 
+            
+
             for dir in dirs[algo]:
+                localPaths = list(dir.glob('**/local.csv'))
+                print(localPaths)
+                mlcPaths = list(dir.glob('**/*.cs.wpi.edu.csv'))
+                print(mlcPaths)
                 name = ' '.join(str(dir).split('/')[-1:])
                 # cwnd
                 cwnd[algo].append((cwnd_analysis.getAverage(dir), name))
                 # throuput
+                throughput[algo].append((throughput_analysis.run_throughput_analysis(localPaths),name))
                 # rtt
+                rtt[algo].append((retransmission_analysis.run_retransmission_analysis(mlcPaths),name))
                 # retransmissions
+                retransmissions[algo].append((retransmission_analysis.run_retransmission_analysis(localPaths),name))
 
     fig = make_subplots(rows=1, cols=len(algosToPlot),
                         subplot_titles=algosToPlot)

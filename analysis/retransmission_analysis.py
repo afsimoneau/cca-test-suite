@@ -122,6 +122,8 @@ def average_data(data_points, time_frame):
     return [avg_retransmission_list,seconds_list,margin_of_error_list]
 
 def margin_of_error(data_list,average,n):
+    if (n==1):
+        return 0
     sum_squares = 0
     for x in data_list:
         sum_squares += (x-average)**2
