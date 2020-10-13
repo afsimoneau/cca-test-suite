@@ -3,17 +3,17 @@ import plotly.graph_objects as go
 import pandas as pd
 from datetime import datetime
 from glob import glob
+from pathlib import Path
 
 
 def dateparse(x): return datetime.strptime(x, '%Y-%m-%d %H:%M:%S.%f')
 
 
 def getAverage(dir):
-    cwnds = glob(dir + '**/cwnd.csv')
-    for file1 in cwnds:
+    for file1 in dir.glob('**/cwnd.csv'):
         f = open(file1, 'r+')
         lines = f.readlines()  # read old content
-        print(file1)
+        # print(file1)
         if "time" not in lines[0]:
             print("replace")
             f.seek(0)  # go back to the beginning of the file
@@ -22,15 +22,14 @@ def getAverage(dir):
                 f.write(line)
             f.close()
 
-    # print(cwnds)
-
     dfs = []
-    for path in cwnds:
-        # print(path)
+    for path in dir.glob('**/cwnd.csv'):
+        print(path)
         df = pd.read_csv(path, parse_dates=[
                          'time'], date_parser=dateparse, index_col=0)
         dfs.append(df)
 
+    # print(dfs)
     average_dfs = []
 
     for df in dfs:
@@ -106,6 +105,7 @@ def main():
     # fig.update_layout(title='Average CWND Cubic Hystart On',
     #                   xaxis_title='Time (s)',
     #                   yaxis_title='cwnd')
+
 
     # fig.show()
 if __name__ == "__main__":
