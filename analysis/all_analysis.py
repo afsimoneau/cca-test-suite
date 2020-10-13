@@ -1,7 +1,10 @@
 import plotly.express as px
 import plotly.graph_objects as go
-import cwnd_analysis
+import plotly.colors
+from plotly.subplots import make_subplots
 from pathlib import Path
+
+import cwnd_analysis
 
 # returns a dictionary of all final_data directories
 # example: dirs['bbr'] => ['./../final_data/bbr/3/',...]
@@ -29,7 +32,7 @@ def getDirs():
 def main():
     algosToPlot = [
         'bbr',
-        'cubic_hystart_off',
+        # 'cubic_hystart_off',
         'cubic_hystart_on',
         'hybla',
         'pcc'
@@ -58,21 +61,45 @@ def main():
             retransmissions[algo] = []
 
             for dir in dirs[algo]:
-                name = ' '.join(str(dir.stem).split('/')[-3:-1])
+                name = ' '.join(str(dir).split('/')[-1:])
                 # cwnd
                 cwnd[algo].append((cwnd_analysis.getAverage(dir), name))
                 # throuput
                 # rtt
                 # retransmissions
 
-    fig = go.Figure()
+    fig = make_subplots(rows=1, cols=len(algosToPlot),
+                        subplot_titles=algosToPlot)
 
-    for x in cwnd['pcc']:
-        df = x[0]
-        name = x[1]
-        fig.add_trace(go.Scatter(x=df.index, y=df['mean'],
-                                 mode='lines',
-                                 name=name))
+    cols = plotly.colors.DEFAULT_PLOTLY_COLORS
+    colorSwitch = {
+        3: 0,
+        10: 1,
+        40: 2,
+        180000: 3,
+        600000: 4,
+        2400000: 9, }
+    legend = True
+    for index, algo in enumerate(algosToPlot):
+        if algo == 'pcc':
+            legend = True
+        for x in cwnd[algo]:
+            df = x[0]
+            name = x[1]
+
+            colorIndex = colorSwitch.get(int(name))
+
+            fig.add_trace(go.Scatter(x=df.index, y=df['mean'],
+                                     mode='lines',
+                                     name=name,
+                                     marker=dict(color=cols[colorIndex]), showlegend=legend),
+                          row=1,
+                          col=index+1)
+        legend = False
+
+    fig.update_layout(title=f'Average cwnd',
+                      xaxis_title='Time (s)',
+                      yaxis_title='cwnd')
     fig.show()
 
 

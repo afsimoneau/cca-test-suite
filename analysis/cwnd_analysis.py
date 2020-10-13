@@ -10,7 +10,8 @@ def dateparse(x): return datetime.strptime(x, '%Y-%m-%d %H:%M:%S.%f')
 
 
 def getAverage(dir):
-    for file1 in dir.glob('**/cwnd.csv'):
+    cwnds = list(dir.glob('**/cwnd.csv'))
+    for file1 in cwnds:
         f = open(file1, 'r+')
         lines = f.readlines()  # read old content
         # print(file1)
@@ -23,7 +24,7 @@ def getAverage(dir):
             f.close()
 
     dfs = []
-    for path in dir.glob('**/cwnd.csv'):
+    for path in cwnds:
         print(path)
         df = pd.read_csv(path, parse_dates=[
                          'time'], date_parser=dateparse, index_col=0)
@@ -86,7 +87,7 @@ def main():
 
     results = []
     for dir in dirs['bbr']:
-        name = ' '.join(dir.split('/')[-3:-1])
+        name = ' '.join(dir.split('/')[:-1])
         print(name)
         results.append((getAverage(dir), name))
 
