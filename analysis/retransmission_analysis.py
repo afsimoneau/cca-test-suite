@@ -2,9 +2,22 @@ import csv
 import plotly
 import sys
 import os
+import math
 from glob import glob
 
 def parse_csv(csv_file):
+    """Parses an individual CSV file into a set of data points
+
+    Args:
+        csv_file (File): a csv file
+
+    Returns:
+        List[List[int,int,float]]: A list of data points. 
+                                   Each data points consist of 
+                                   0: 1 if is a transmission, 
+                                   1: 1 if is a retransmission, 
+                                   2: time  in seconds
+    """
     data_points = []
     csv_reader = csv.reader(csv_file, delimiter=',')
     line_count = 0
@@ -27,10 +40,23 @@ def parse_csv(csv_file):
     return data_points
 
 def totals_per_time_frame(data_points, time_frame):
+    """For a set of data points from a single CSV file, 
+       calculate the average percent restransmissions per time frame
+
+    Args:
+        data_points (List[List[int,int,float]]): A list of data points. 
+                                                 Each data points consist of 
+                                                 0: 1 if is a transmission, 
+                                                 1: 1 if is a retransmission, 
+                                                 2: time  in seconds
+        time_frame (float): increment of time in seconds in which new data points are calculated
+
+    Returns:
+        List[List[float,float]]: A list of data points containing the percent retransmissions, and the time in seconds
+    """
     time_frame_min = 0
     time_frame_max = time_frame
     percent_retransmissions_list = []
-    time_list = []
     transmissions_in_frame = 0
     retransmissions_in_frame = 0
     index = 0
@@ -40,28 +66,86 @@ def totals_per_time_frame(data_points, time_frame):
             retransmissions_in_frame += data_points[index][1]
             index += 1
         else:
-            try:
+            if transmissions_in_frame > 0:
                 percent_retransmissions = 100*retransmissions_in_frame/transmissions_in_frame
-            except ZeroDivisionError:
+            else:
                 percent_retransmissions = 0
-            percent_retransmissions_list.append(percent_retransmissions)
-            time_list.append(time_frame_min)
+            percent_retransmissions_list.append([percent_retransmissions,time_frame_min])
             time_frame_min = time_frame_max
             time_frame_max += time_frame
             transmissions_in_frame = 0
             retransmissions_in_frame = 0
-    return [percent_retransmissions_list,time_list]
-    
-def generate_trace(csv_files, figure):
+    return percent_retransmissions_list
+
+def average_data(data_points, time_frame):
+    """Takes a list of data points from multiple CSV files (sorted by time) and 
+       calculates both the average and margin of error across the multiple CSVs for each point
+
+    Args:
+        data_points (List[List[float,float]]): A list of data points containing the percent retransmissions, and the time in seconds
+        time_frame (float): increment of time in seconds in which new data points are calculated
+
+    Returns:
+        List[List[float],List[float],List[float]]: A list containing three lists
+                                                   0: list of average percentage of retransmissions within a time frame across multiple CSVs
+                                                   1: a list of time intervals
+                                                   2: list of margins of error across multiple CSVs for each time frame
+    """
+    time_frame_min = 0
+    time_frame_max = time_frame
+    avg_retransmission_list = []
+    data_points_in_time_frame_list = [] #used to calculate margin of error
+    seconds_list = []
+    margin_of_error_list = []
+    percent_sum_in_frame = 0
+    samples = 0
+    index = 0
+    while time_frame_max < data_points[-1][1] and index < len(data_points):
+        if data_points[index][1] >= time_frame_min and data_points[index][1] < time_frame_max:
+            percent_sum_in_frame += data_points[index][0]
+            data_points_in_time_frame_list.append(data_points[index][0])
+            samples += 1
+            index += 1
+        else:
+            if samples > 0:
+                avg_percent = percent_sum_in_frame/samples
+                avg_retransmission_list.append(avg_percent)
+                margin_of_error_list.append(margin_of_error(data_points_in_time_frame_list,avg_percent,samples))
+            else:
+                avg_retransmission_list.append(0)
+                margin_of_error_list.append(0)
+            seconds_list.append(time_frame_min)
+            time_frame_min = time_frame_max
+            time_frame_max += time_frame
+            percent_sum_in_frame = 0
+            samples = 0
+    return [avg_retransmission_list,seconds_list,margin_of_error_list]
+
+def margin_of_error(data_list,average,n):
+    sum_squares = 0
+    for x in data_list:
+        sum_squares += (x-average)**2
+    return 1.960*(math.sqrt(sum_squares/(n-1)))/(math.sqrt(n))
+
+def generate_trace(csv_files_to_average, label, figure):
+    total_data_points = []
     data_points = []
-    for x in csv_files:
+    averaged_lists = []
+
+    for x in csv_files_to_average:
         data_points = parse_csv(open(x))
         data_points = totals_per_time_frame(data_points, time_frame)
-        # print(data_points)
-        figure.add_trace(plotly.graph_objects.Scatter(
-            x=data_points[1],
-            y=data_points[0],
-        ))
+        for y in data_points:
+            total_data_points.append(y)
+
+    total_data_points = sorted(total_data_points,key=lambda x: x[1])
+    averaged_lists = average_data(total_data_points, time_frame)
+
+    figure.add_trace(plotly.graph_objects.Scatter(
+        x=averaged_lists[1],
+        y=averaged_lists[0],
+        name=label  
+    ))
 
 time_frame = 1
 
@@ -70,7 +154,7 @@ WIN_DIR = [3,5,10,20,40,100,250]
 PCC_DIR = [180000,300000,600000,1200000,2400000]
 
 if (len(sys.argv)==4):
-    #retransmission.py <algorithm> <letter> <trials>
+    #retransmission_average.py <algorithm> <letter> <trials>
     num_trials = int(sys.argv[3])
     mlc_letter = sys.argv[2]
     algorithm = sys.argv[1]
@@ -81,15 +165,16 @@ if (len(sys.argv)==4):
     else:
         dirs = WIN_DIR
     
+    figure = plotly.graph_objects.Figure()
     for inwin in dirs:
-        figure = plotly.graph_objects.Figure()
         paths = []
         for trial in range(num_trials):
             paths.append(f"./../initcwnd_data/{algorithm}/{inwin}/mlcnet{mlc_letter}.cs.wpi.edu_{algorithm}_{trial}/local.csv")
         print(f"window: {inwin}")
-        generate_trace(paths,figure)
-        figure.update_layout(title=f"{algorithm} {inwin}", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
-        figure.update_xaxes(range=[0,40])
-        figure.update_yaxes(range=[0,100])
-        figure.write_image(f"retransmission_{algorithm}_{inwin}.png")
-        figure.show()
+        generate_trace(paths,inwin,figure)
+
+    figure.update_layout(title=f"{algorithm} {inwin}", xaxis_title="Time (s)", yaxis_title="Retransmission Rate")
+    figure.update_xaxes(range=[0,40])
+    figure.update_yaxes(range=[0,100])
+    figure.write_image(f"average_retransmission_{algorithm}.png")
+    figure.show()

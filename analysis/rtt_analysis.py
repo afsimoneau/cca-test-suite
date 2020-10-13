@@ -43,7 +43,7 @@ def average_data(data_points, time_frame):
                 avg_rtt = 1000*rtt_sum_in_frame/samples #milliseconds
                 avg_rtt_list.append(avg_rtt)
                 margin_of_error_list.append(margin_of_error(data_points_in_time_frame_list,avg_rtt,samples))
-            seconds_list.append(time_frame_min)
+                seconds_list.append(time_frame_min)
             time_frame_min = time_frame_max
             time_frame_max += time_frame
             rtt_sum_in_frame = 0
