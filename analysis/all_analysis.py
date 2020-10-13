@@ -3,6 +3,9 @@ import plotly.graph_objects as go
 
 import cwnd_analysis
 
+# returns a dictionary of all final_data directories
+# example: dirs['bbr'] => ['./../final_data/bbr/3/',...]
+
 
 def getDirs():
     init_cwnds = ['3', '10', '40']
@@ -31,8 +34,14 @@ def main():
         'pcc'
     ]
 
-    dirs = getDirs()
+    dirs = getDirs()  # dirs['bbr'] => all bbr directories
 
+    # dicts to hold all the graphs
+    # index is algo, each index holds a list off all the data: cwnd['bbr'] => list bbr cwnd data
+    # every element of the lists contains a tuple of the data used to make the graph then the name of the graph
+    # example: cwnd['bbr'][0] => (df, 'bbr 3')
+    #          cwnd['bbr'][1] => (df, 'bbr 10')
+    #          cwnd['bbr'][2] => (df, 'bbr 40')
     cwnd = {}
     throughput = {}
     rtt = {}
