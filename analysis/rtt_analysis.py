@@ -13,7 +13,7 @@ def parse_csv(csv_file):
         if line_count == 0:
             pass
         else:
-            if not "130.215.28." in row[4] and len(row[9]) > 0:
+            if "130.215.28." in row[5] and len(row[9]) > 0:
                 if start_time == None:
                     start_time = sum(x * float(t) for x, t in zip([3600, 60, 1], row[11][12:30].split(":")))
                     data_points.append([float(row[9]),0])
