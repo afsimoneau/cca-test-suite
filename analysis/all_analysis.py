@@ -109,105 +109,98 @@ def main():
     for algo in algosToPlot:
         plot_algo(algo, cwnd, throughput, rtt, retransmissions)
 
-    # fig = make_subplots(rows=1, cols=len(algosToPlot),
-    #                     subplot_titles=algosToPlot)
+    plot_algo(algosToPlot, cwnd, throughput, rtt, retransmissions)
 
-    # cols = plotly.colors.DEFAULT_PLOTLY_COLORS
-    # colorSwitch = {
-    #     3: 0,
-    #     10: 1,
-    #     40: 2,
-    #     180000: 3,
-    #     600000: 4,
-    #     2400000: 9, }
-    # legend = True
-    # for index, algo in enumerate(algosToPlot):
-    #     if algo == 'pcc':
-    #         legend = True
-    #     for x in cwnd[algo]:
-    #         df = x[0]
-    #         name = x[1]
-
-    #         colorIndex = colorSwitch.get(int(name))
-
-    #         fig.add_trace(go.Scatter(x=df.index, y=df['mean'],
-    #                                  mode='lines',
-    #                                  name=name,
-    #                                  marker=dict(color=cols[colorIndex]), showlegend=legend),
-    #                       row=1,
-    #                       col=index+1)
-    #     legend = False
-
-    # fig.update_layout(title=f'Average cwnd',
-    #                   xaxis_title='Time (s)',
-    #                   yaxis_title='cwnd')
-    # fig.show()
+    plot_algo(['cubic_hystart_off', 'cubic_hystart_on'],
+              cwnd, throughput, rtt, retransmissions)
 
 
-def plot_algo(algo, cwnd, throughput, rtt, retransmissions):
-    fig = make_subplots(rows=1, cols=4, subplot_titles=(
-        'cwnd', 'throughput', 'rtt', 'retransmissions'))
+def plot_algo(cca, cwnd, throughput, rtt, retransmissions):
+    if not isinstance(cca, list):
+        cca = [cca]
 
-    for x in cwnd[algo]:
-        df = x[0]
-        name = x[1]
+    fig = make_subplots(rows=4, cols=len(
+        cca), subplot_titles=cca, shared_yaxes=True)
 
-        colorIndex = colorSwitch.get(int(name))
+    legend = True
 
-        fig.add_trace(go.Scatter(x=df.index, y=df['mean'],
-                                 mode='lines',
-                                 name=name,
-                                 marker=dict(color=cols[colorIndex])),
-                      row=1,
-                      col=1)
-        fig.update_yaxes(title_text="cwnd", row=1, col=1)
+    for index, algo in enumerate(cca):
+        if algo == 'pcc':
+            legend = True
 
-    for x in throughput[algo]:
-        data = x[0]
-        name = x[1]
+        for x in cwnd[algo]:
+            df = x[0]
+            name = x[1]
 
-        colorIndex = colorSwitch.get(int(name))
+            colorIndex = colorSwitch.get(int(name))
 
-        fig.add_trace(go.Scatter(x=data[0], y=data[1],
-                                 mode='lines',
-                                 name=name,
-                                 marker=dict(color=cols[colorIndex]), showlegend=False),
-                      row=1,
-                      col=2)
-        fig.update_yaxes(title_text="MB/s", row=1, col=2)
+            fig.add_trace(go.Scatter(x=df.index, y=df['mean'],
+                                     mode='lines',
+                                     name=name,
+                                     marker=dict(color=cols[colorIndex]), showlegend=legend),
+                          row=1,
+                          col=index+1)
+            fig.update_xaxes(
+                range=[0, 60])
+            fig.update_yaxes(title_text="cwnd", row=1, col=1)
 
-    for x in rtt[algo]:
-        data = x[0]
-        name = x[1]
+        for x in throughput[algo]:
+            data = x[0]
+            name = x[1]
 
-        colorIndex = colorSwitch.get(int(name))
+            colorIndex = colorSwitch.get(int(name))
 
-        fig.add_trace(go.Scatter(x=data[0], y=data[1],
-                                 mode='lines',
-                                 name=name,
-                                 marker=dict(color=cols[colorIndex]), showlegend=False),
-                      row=1,
-                      col=3)
-        fig.update_yaxes(title_text="ms", row=1, col=3)
+            fig.add_trace(go.Scatter(x=data[0], y=data[1],
+                                     mode='lines',
+                                     name=name,
+                                     marker=dict(color=cols[colorIndex]), showlegend=False),
+                          row=2,
+                          col=index+1)
+            fig.update_xaxes(
+                range=[0, 60])
+            fig.update_yaxes(title_text="Throughput (MB/s)", row=2, col=1)
 
-    for x in retransmissions[algo]:
-        data = x[0]
-        name = x[1]
+        for x in rtt[algo]:
+            data = x[0]
+            name = x[1]
 
-        colorIndex = colorSwitch.get(int(name))
+            colorIndex = colorSwitch.get(int(name))
 
-        fig.add_trace(go.Scatter(x=data[0], y=data[1],
-                                 mode='lines',
-                                 name=name,
-                                 marker=dict(color=cols[colorIndex]), showlegend=False),
-                      row=1,
-                      col=4)
-        fig.update_yaxes(title_text="(%)", row=1, col=4)
+            fig.add_trace(go.Scatter(x=data[0], y=data[1],
+                                     mode='lines',
+                                     name=name,
+                                     marker=dict(color=cols[colorIndex]), showlegend=False),
+                          row=3,
+                          col=index+1)
+            fig.update_xaxes(
+                range=[0, 60])
+            fig.update_yaxes(title_text="RTT (ms)", row=3, col=1)
 
-    title = 'init_cwnd' if algo != 'pcc' else 'slow_start_initial_rate'
-    fig.update_layout(title=f'{algo}',
-                      yaxis_title='cwnd', legend_title=title,
-                      )
+        for x in retransmissions[algo]:
+            data = x[0]
+            name = x[1]
+
+            colorIndex = colorSwitch.get(int(name))
+
+            fig.add_trace(go.Scatter(x=data[0], y=data[1],
+                                     mode='lines',
+                                     name=name,
+                                     marker=dict(color=cols[colorIndex]), showlegend=False),
+                          row=4,
+                          col=index+1)
+            fig.update_xaxes(
+                range=[0, 60])
+            fig.update_yaxes(title_text="Retransmissions (%)", row=4, col=1)
+
+            legend = False
+
+        title = 'slow_start_initial_rate' if algo == 'pcc' and len(
+            algo) == 1 else 'init_cwnd'
+
+        if len(algo) == 1:
+            fig.update_layout(title=f'{algo}',
+                              yaxis_title='cwnd', legend_title=title,
+                              )
     fig.show()
 
 
