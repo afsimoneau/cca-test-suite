@@ -6,7 +6,7 @@ import glob as glob
 import pickle
 import retransmission_analysis
 import throughput_analysis
-import retransmission_analysis
+import rtt_analysis
 import cwnd_analysis
 
 from pathlib import Path
@@ -86,10 +86,11 @@ def analysis(algosToPlot, reload=False):
                     (throughput_analysis.run_throughput_analysis(localPaths), name))
                 # rtt
                 rtt[algo].append(
-                    (retransmission_analysis.run_retransmission_analysis(mlcPaths), name))
+                    (rtt_analysis.run_rtt_analysis(mlcPaths), name))
                 # retransmissions
                 retransmissions[algo].append(
                     (retransmission_analysis.run_retransmission_analysis(localPaths), name))
+        if not os.path.isfile(f"{algo}.p") or reload:
             pickle.dump((cwnd[algo], throughput[algo], rtt[algo], retransmissions[algo]),
                         open(f"{algo}.p", "wb"))
 
@@ -104,15 +105,21 @@ def main():
         'hybla',
         'pcc'
     ]
-    cwnd, throughput, rtt, retransmissions = analysis(algosToPlot)
 
-    for algo in algosToPlot:
-        plot_algo(algo, cwnd, throughput, rtt, retransmissions)
+    cwnd, throughput, rtt, retransmissions = analysis(
+        algosToPlot, reload=False)  # reload=true reruns the analysis and doesnt use the pickle files
 
-    plot_algo(algosToPlot, cwnd, throughput, rtt, retransmissions)
+    # for algo in algosToPlot:
+    #     plot_algo(algo, cwnd, throughput, rtt, retransmissions)
+    # plot_algo('cubic_hystart_on', cwnd, throughput, rtt, retransmissions)
 
-    plot_algo(['cubic_hystart_off', 'cubic_hystart_on'],
-              cwnd, throughput, rtt, retransmissions)
+    plot_algo(['bbr',
+               'cubic_hystart_on',
+               'hybla',
+               'pcc'], cwnd, throughput, rtt, retransmissions)
+
+    # plot_algo(['cubic_hystart_off', 'cubic_hystart_on'],
+    #           cwnd, throughput, rtt, retransmissions)
 
 
 def plot_algo(cca, cwnd, throughput, rtt, retransmissions):
@@ -174,7 +181,9 @@ def plot_algo(cca, cwnd, throughput, rtt, retransmissions):
                           col=index+1)
             fig.update_xaxes(
                 range=[0, 60])
-            fig.update_yaxes(title_text="RTT (ms)", row=3, col=1)
+            fig.update_yaxes(title_text="RTT (ms)", range=[
+                             0, 4000], row=3, col=1)
+            # fig.update_yaxes(title_text="RTT (ms)", row=3, col=1)
 
         for x in retransmissions[algo]:
             data = x[0]
@@ -195,7 +204,7 @@ def plot_algo(cca, cwnd, throughput, rtt, retransmissions):
             legend = False
 
         title = 'slow_start_initial_rate' if algo == 'pcc' and len(
-            algo) == 1 else 'init_cwnd'
+            algo) == 1 else 'initcwnd'
 
         if len(algo) == 1:
             fig.update_layout(title=f'{algo}',

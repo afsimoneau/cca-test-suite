@@ -4,6 +4,7 @@ import sys
 import os
 import math
 
+
 def parse_csv(csv_file):
     data_points = []
     csv_reader = csv.reader(csv_file, delimiter=',')
@@ -15,12 +16,15 @@ def parse_csv(csv_file):
         else:
             if "130.215.28." in row[5] and len(row[9]) > 0:
                 if start_time == None:
-                    start_time = sum(x * float(t) for x, t in zip([3600, 60, 1], row[11][12:30].split(":")))
-                    data_points.append([float(row[9]),0])
+                    start_time = sum(
+                        x * float(t) for x, t in zip([3600, 60, 1], row[11][12:30].split(":")))
+                    data_points.append([float(row[9]), 0])
                 else:
-                    data_points.append([float(row[9]),sum(x * float(t) for x, t in zip([3600, 60, 1], row[11][12:30].split(":"))) - start_time])
+                    data_points.append([float(row[9]), sum(
+                        x * float(t) for x, t in zip([3600, 60, 1], row[11][12:30].split(":"))) - start_time])
         line_count += 1
     return data_points
+
 
 def average_data(data_points, time_frame):
     time_frame_min = 0
@@ -40,24 +44,27 @@ def average_data(data_points, time_frame):
             index += 1
         else:
             if samples > 0:
-                avg_rtt = 1000*rtt_sum_in_frame/samples #milliseconds
+                avg_rtt = 1000*rtt_sum_in_frame/samples  # milliseconds
                 avg_rtt_list.append(avg_rtt)
-                margin_of_error_list.append(margin_of_error(data_points_in_time_frame_list,avg_rtt,samples))
+                margin_of_error_list.append(margin_of_error(
+                    data_points_in_time_frame_list, avg_rtt, samples))
                 seconds_list.append(time_frame_min)
             time_frame_min = time_frame_max
             time_frame_max += time_frame
             rtt_sum_in_frame = 0
             samples = 0
             data_points_in_time_frame_list = []
-    return [avg_rtt_list,seconds_list,margin_of_error_list]
-    
-def margin_of_error(data_list,average,n):
-    if (n<=1):
+    return [avg_rtt_list, seconds_list, margin_of_error_list]
+
+
+def margin_of_error(data_list, average, n):
+    if (n <= 1):
         return 0
     sum_squares = 0
     for x in data_list:
         sum_squares += (x-average)**2
     return 1.960*(math.sqrt(sum_squares/(n-1)))/(math.sqrt(n))
+
 
 def generate_trace(csv_files_to_average, time_frame):
     total_data_points = []
@@ -67,7 +74,7 @@ def generate_trace(csv_files_to_average, time_frame):
         data_points = parse_csv(open(x))
         for y in data_points:
             total_data_points.append(y)
-    total_data_points = sorted(total_data_points,key=lambda x: x[1])
+    total_data_points = sorted(total_data_points, key=lambda x: x[1])
     averaged_lists = average_data(total_data_points, time_frame)
     x = averaged_lists[1]
     x_rev = x[::-1]
@@ -78,9 +85,10 @@ def generate_trace(csv_files_to_average, time_frame):
         y_upper.append(averaged_lists[0][i] + averaged_lists[2][i])
         y_lower.append(averaged_lists[0][i] - averaged_lists[2][i])
     y_lower = y_lower[::-1]
-    return [x,y,x+x_rev,y_upper+y_lower]
+    return [x, y, x+x_rev, y_upper+y_lower]
 
-def run_rtt_analysis(files,time_frame=1):
+
+def run_rtt_analysis(files, time_frame=1):
     """Point of entry, only call this function
 
     Args:
@@ -94,4 +102,4 @@ def run_rtt_analysis(files,time_frame=1):
                                                                 3. x values for margin of error
                                                                 4. y values for margin of error
     """
-    return generate_trace(files,time_frame)
+    return generate_trace(files, time_frame)
