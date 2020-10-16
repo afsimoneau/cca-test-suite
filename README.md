@@ -6,7 +6,7 @@ Usage notes: This is to simplify the distribution, so mainly using master is fin
 
 ## Running Experiments
 
-There are five servers we use to run experiments "glomma.cs.wpi.edu" and mlcnet{a,b,c,d}.cs.wpi.edu. The mlcnet servers are where the congestion control algorithms are changed. All tests have to be started on glomma to ensure that the connection goes through the satellite connection. If glomma is ever restarted the setup_routes.sh script must be run to setup the proper ip routing tables. Most of the code in this folder was from Saahil Claypool's [repo](https://github.com/SaahilClaypool/Satellite)
+There are five servers we use to run experiments glomma.cs.wpi.edu and mlcnet{a,b,c,d}.cs.wpi.edu. The mlcnet servers are where the congestion control algorithms are changed. All tests have to be started on glomma to ensure that the connection goes through the satellite connection. If glomma is ever restarted the setup_routes.sh script must be run to setup the proper ip routing tables. Most of the code in this folder was from Saahil Claypool's [repo](https://github.com/SaahilClaypool/Satellite)
 
 Inside of the data_collection folder there are three scripts that we used to run experiments.
 
