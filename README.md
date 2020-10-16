@@ -24,7 +24,7 @@ Inside of the analysis folder we have all the scripts we used for analysis.
     -   In order to generate a graph the data must be stored in the folder final data.
     -   If you add a new data folder you must add its name to the algosToPlot list in main() and algos list in getDirs()
     -   This script generates pickle files of the analysis objects to prevent the script from having to run the analysis everytime it runs. If you change the data you must change reload to True. New folders will always be analyzed.
--   cwnd_analysis.py: Analyses cwnd data
+-   cwnd_analysis.py: cwnd analysis
     -   dir = path to initcwnd folder in each folder. ex "final_data/brr/10"
     -   cwnd_analysis.getAverage(dir)
     -   returns pandas dataframe
